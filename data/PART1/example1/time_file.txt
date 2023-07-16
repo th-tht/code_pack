@@ -1,0 +1,7 @@
+Time for proto-network generation :  0.05 s
+Time for Network building and Evaluation:  0.00 s
+The TOTAL TIME:  0.05 s
+The proto-network number: 1
+The evaluate proto-network number: 1
+TOTAL Enum structure number: 3
+Run transshipment model number: 8
