@@ -49,12 +49,12 @@ Parallel computing command:
 I saved the result files of the two of them in [PART1](/data/PART1/), [PPART1](/data/PPART1/) respectively.
 
 
-## For both method I used the three case file instructions I calculated.
+## For four options I used the three case file instructions I calculated.
 For [PART1](/data/PART1/), We can find TAC in the results1.csv file of the corresponding file directory of examples. 
 Other data can be found from time_file.txt
 
+For [PPART1](/data/PPART1/), We can find TAC and TT in the time_file.txt file of the corresponding file directory of exmples. 
 
-For [PPART1](/data/PPART1/), We can find TAC and TT in thetime_file.txt file of the corresponding file directory of exmples. 
+and the non-isothermal data you can find in [NPART1](/data/NPART1/) and  [NPPART1](/data/NPPART1/)
 
-
-The data of other files is the data of the optimal structure saved, as well as the data generated during the running process so that we can track the running progress of the program
+The data of other files is the data of the optimal structure saved, as well as the data generated during the running process so that we can track the running progress of the program.
