@@ -5,7 +5,7 @@ import sys, os
 from pathlib import Path
 # 采用等温混合的初值会导致传热为负数，致使计算错误
 
-class Flow_optimaze:
+class Flow_optimize:
     
     def __init__(self, zh, zc, temperature, q, hh, hc, fh, fc, aexp, acoeff, EMAT) -> None:
         
@@ -122,13 +122,13 @@ class Flow_optimaze:
         
         #pyo.SolverFactory("gurobi", solver_io="python").solve(self.model, options = {'NonConvex' : 2})
         #a = time.time()
-        path = Path(os.path.abspath(__file__)).parent.parent.parent.parent / "ipopt"
-        if sys.platform == 'win32':
-            path = path/ "ipopt.exe"
-        else:
-            path = path / "ipopt"
         try:
-            results = pyo.SolverFactory('ipopt', executable=path).solve(self.model)
+            if sys.platform == 'win32':
+                path = Path(os.path.abspath(__file__)).parent.parent.parent.parent / "ipopt" /"ipopt.exe"
+                #print(path)
+                results = pyo.SolverFactory('ipopt', executable=path).solve(self.model)
+            else:
+                results = pyo.SolverFactory('ipopt').solve(self.model)
         except:
             results = pyo.SolverFactory("gams").solve(self.model, solver='baron', add_options=['option optcr=0.001', 'option reslim=1000'])#, tee = True) 
         #print(results)

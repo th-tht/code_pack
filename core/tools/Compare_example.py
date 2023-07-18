@@ -359,6 +359,7 @@ class example:
         Nmin_max, Stage_Num = 17, 2
         
         TTAC = 7030035.0
+
         return thin,thout,hh,fh,tcin,tcout,hc,fc,hucost,hucoeff,thuin,thuout,hhu,cucost,cucoeff,tcuin,tcuout,hcu,unitc,acoeff,aexp,EMAT,HRAT,Nmin_max,Stage_Num, TTAC
      
     def example14(self):
@@ -388,6 +389,7 @@ class example:
         Nmin_max, Stage_Num = 15, 3
         
         TTAC = 1500000.1
+        
         return thin,thout,hh,fh,tcin,tcout,hc,fc,hucost,hucoeff,thuin,thuout,hhu,cucost,cucoeff,tcuin,tcuout,hcu,unitc,acoeff,aexp,EMAT,HRAT,Nmin_max,Stage_Num,TTAC
 
     def example15(self):
@@ -415,6 +417,7 @@ class example:
         Nmin_max, Stage_Num = 20, 7
         
         TTAC = 1427966.0
+
         return thin,thout,hh,fh,tcin,tcout,hc,fc,hucost,hucoeff,thuin,thuout,hhu,cucost,cucoeff,tcuin,tcuout,hcu,unitc,acoeff,aexp,EMAT,HRAT,Nmin_max, Stage_Num, TTAC
 
     def example16(self):
@@ -460,5 +463,6 @@ class example:
         Nmin_max, Stage_Num = 38, 4
 
         TTAC = 1958836.0
+        
         return thin,thout,hh,fh,tcin,tcout,hc,fc,hucost,hucoeff,thuin,thuout,hhu,cucost,cucoeff,tcuin,tcuout,hcu,unitc,acoeff,aexp,EMAT,HRAT,Nmin_max,Stage_Num,TTAC  
 

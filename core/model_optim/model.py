@@ -3,7 +3,7 @@ from cmath import log
 from collections import defaultdict
 from itertools import chain
 from typing import Any, Dict,List
-from . import Structure_Data, mytyping, Unpack_data, Numeric, toplogical_sort
+from . import Structure_Data, mytyping, Unpack_data, Numeric, toplogical_sort, Golden_cut
 
 
 
@@ -161,68 +161,7 @@ class model(Unpack_data):
             TAC += self.acoeff * (area**self.aexp)   # 面积费用
         
         return TAC
-                 
-    # 黄金分割
-    def Golden_cut(self, lb, ub):
-        func = self.update_and_solve
-        if (ub - lb) / (lb + 1e-3) <= 1e-3 or abs(lb - ub) <= 1e-3:
-            TAC = func((lb + ub)/2)
-        else:
-            stopper_golden_E = 1
-            x1, y1 = lb, func(lb)
-            x2, y2 = ub, func(ub)
-            x3 = x1 + (x2 - x1)/self.golden_cut
-            y3 = func(x3)
-            min_y123 = min(y1,y2,y3)
-            
-            # 单调性检验
-            if y1 == min_y123:
-                x11 = x1 + 1e-3
-                y11 = func(x11)
-                if y11 > y1:
-                    HU = x1
-                    TAC = func(x1)
-                    stopper_golden_E = 0
-                else:
-                    x2, y2 = x3, y3
-            elif y2 == min_y123:
-                x22 = x2 - 1e-3
-                y22 = func(x22)
-                if y22 > y2:
-                    HU = x2
-                    TAC = func(x2)
-                    stopper_golden_E = 0 
-                else:
-                    x1,y1 = x3,y3
-  
-            altcount_golden_E = 1
-            while stopper_golden_E > 0:
-
-                if altcount_golden_E == 1:
-                    x3 = x1 + (x2 - x1)/self.golden_cut
-                    y3 = func(x3)
-                    x4 = x2 - (x2 - x1)/self.golden_cut
-                    y4 = func(x4)
-                    altcount_golden_E += 1
-                    
-                elif y4 <= y3:
-                    x2, y2 = x3, y3
-                    x3, y3 = x4, y4
-                    x4 = x2 - (x2 - x1)/self.golden_cut
-                    y4 = func(x4)
-                else:
-                    x1, y1 = x4, y4
-                    x4, y4 = x3, y3
-                    x3 = x1 + (x2 - x1)/self.golden_cut
-                    y3 = func(x3)
-                    
-                if abs(x2 - x1)/(1e-3 + x1) < 1e-3:
-                    stopper_golden_E = 0
-                    HU = (x1 + x2) / 2
-                    TAC = func(HU)
-        
-        return self.Data_pack()
-        
+                     
     # 重新计算计算TAC，以及数据打包
     def Data_pack(self) -> Structure_Data:
         
@@ -307,7 +246,10 @@ class model(Unpack_data):
             lb += min(ub-lb,1e-5)
             ub -= min(ub-lb,1e-5)
         #print(lb,ub)
-        return self.Golden_cut(lb, ub)
+        hu = Golden_cut(lb, ub, self.update_and_solve)
+        self.update_and_solve(hu)
+        
+        return self.Data_pack()
 
         # 运行
     

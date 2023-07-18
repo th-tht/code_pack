@@ -1,6 +1,6 @@
-Time for proto-network generation :  0.03 s
-Time for Network building and Evaluation:  0.27 s
-The TOTAL TIME:  0.30 s
+Time for proto-network generation :  0.04 s
+Time for Network building and Evaluation:  0.00 s
+The TOTAL TIME:  0.04 s
 The proto-network number: 2
 The evaluate proto-network number: 2
 TOTAL Enum structure number: 4

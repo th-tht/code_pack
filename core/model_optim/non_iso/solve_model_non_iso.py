@@ -1,39 +1,40 @@
 from collections import deque
 from typing import List, Dict
-import math, copy
+import math
 
 from core.model_optim import Structure_Data
-from .Flow_optimize import Flow_optimaze
+from .Flow_optimize_Golden_cut import Flow_optimize
 from ..model import model
 from .. import Numeric
 
 
 class Heat_exchanger_network(model): 
     
+    """
+    type:
+    
+    gathered:   List[List(HEX)]
+    stream_temp:  stream : temperature list
+    flow:  (h,c): value, (c,h): value
+    flow_opt:  gather_idx: Flow_optimaze 
+    
+    """
+    
+    
     def __init__(self, data):
             
         super(Heat_exchanger_network, self).__init__(data)
         
-
     def update_struct(self, zh: Dict, zc: Dict, zhu: Dict, zcu: Dict):
         
         super().update_struct(zh, zc, zhu, zcu)
         
         self.gathered = self._gathered()
         
-        self.flow_idx = dict()
-        self.flow_initial = dict()
         
         gather_length = len(self.gathered)
-        for idx, gather in enumerate(self.gathered):
-            d = {(h,c): 0 for h,c in gather}
-            d.update({(c,h): 0 for h,c in gather})
-            self.flow_initial[idx] = d
-
         self.stream_temp = dict() # stream stemperature
         self.flow = dict()         # 优化得到的流量
-        self.approach_temperature = dict()
-        self.model_sets = [None]*(gather_length)
         self.flow_opt = [None]*(gather_length)
         
     @staticmethod
@@ -55,7 +56,6 @@ class Heat_exchanger_network(model):
         
         return bound
     
-    #TODO
     def bounder(self):
         # TODO
         # 根据loadfunc 计算热公用工程用量边界
@@ -95,12 +95,10 @@ class Heat_exchanger_network(model):
         bound = self.update_bound(approach, bound)
         
         return bound
-
-        # !将对应的换热匹配聚集为同一级, 注意没有和其他流股换热的  
     
+    # 将对应的换热匹配聚集为同一级, 注意没有和其他流股换热的  
     def _gathered(self):    
         # 将分流相互影响的换热器聚集
-        
         def dfs(h : str, l: list):
             
             if (h, l[0]) in visited:
@@ -124,94 +122,11 @@ class Heat_exchanger_network(model):
 
         return gathered
     
-    def feasiblel_judge(self, gathered_idx):
-        
-        def cal_temp(st: str, sst: str):
-            
-            if st.startswith('H'):
-                h,c = st, sst
-                tl = self.stream_temp[st][self.zh[h,c]]
-                tr = tl - self.q[h,c] / flow[h,c]
-                
-            else:
-                c,h = st, sst
-                tr = self.stream_temp[st][self.zc[c,h] + 1]
-                tl = tr + self.q[h,c] / flow[c,h]
-                
-            return tl, tr
-                
-        # 以分流为单位进行递归
-        def cal_minnum_flow(st1: str, st2: int, status: int):
-            '''
-            计算部分可直接获得的流股流量, 主要test2的另外两条分流类似
-            对于只有无分流的情况无需考虑传热温差，因为有分流的会考虑，也不会有只有一个换热器的情况,
-            热量传递路径只有一条, 对于此分流而言, 入口温度以及里面的换热器与HU无关则此分流与HU无关。
-            此时只需保证无关分流流量最小，此时计算得到的边界则是最后边界,
-            status 代表求大还是求小
-            '''
-            if flow[st1, st2] is not None:
-                return True
-            
-            if len(self.gather_split[st1][stage[st1] - 1]) <= 1:
-                flow[st1, st2] = residual[st1]
-            
-            elif status == 1: 
-                for sst2 in self.gather_split[st1][stage[st1] - 1]:
-                    if sst2 != st2:
-                        if not cal_minnum_flow(st1, sst2, 0):
-                            return False       
-                flow[st1, st2] = residual[st1]
-                return True
-            
-            else:
-                
-                if flow[st2, st1] is None:
-                    cal_minnum_flow(st2, st1, 1)
-
-                if st1.startswith('H'):
-                    h,c = st1, st2
-                    tin = self.stream_temp[h][stage[h]]
-                    tcl,tcr = cal_temp(c, h)
-                    thl,thr = tcl + self.EMAT, tcr + self.EMAT
-                    ff = self.q[h,c] / (tin - thr) + 1e-3           
-                    
-                else:
-                    h,c = st2, st1
-                    tin = self.stream_temp[c][stage[c]+1]
-                    thl, thr = cal_temp(h, c)
-                    tcl,tcr = thl - self.EMAT, thr - self.EMAT
-                    ff = self.q[h,c] / (tcl - tin) + 1e-3
-                    
-                residual[st1] -= ff
-                flow[st1, st2] = ff
-            
-            return True
-        
-            
-        flow = {(a,b): None for a,b in self.flow_initial[gathered_idx]}
-        stage, residual = dict(), dict()
-        
-        for h,c in self.gathered[gathered_idx]:
-            residual[h] = self.fh[h]
-            residual[c] = self.fc[c]
-            stage[h] = self.zh[h,c]
-            stage[c] = self.zc[c,h]
-            
-        for a,b in flow.keys():
-            cal_minnum_flow(a, b, 1)
-            
-        self.flow_initial[gathered_idx] = flow
-        
-        return True
- 
     #对流量需要进行优化的进行优化
     def cal_TAC(self):
         
         self.stream_temp = self.stream_temperature()
-        # 对每个部分求得初值
-        for gathered_idx in range(len(self.gathered)):
-            if not self.feasiblel_judge(gathered_idx):    # 采用贪心算法生成初始值以及判断是否可行
-                return None
+        
         TAC = 0
         # 不同部分的流量
         for gathered_idx in range(len(self.gathered)):
@@ -234,10 +149,11 @@ class Heat_exchanger_network(model):
                     temperature[h] = [self.stream_temp[h][stage[h]], self.stream_temp[h][stage[h] + 1]]
                     temperature[c] = [self.stream_temp[c][stage[c]], self.stream_temp[c][stage[c] + 1]]
                 
-                self.flow_opt[gathered_idx] = Flow_optimaze(zh, zc, temperature, q, self.hh, self.hc, self.fh, self.fc, self.aexp, self.acoeff, self.EMAT)
+                self.flow_opt[gathered_idx] = Flow_optimize(zh, zc, temperature, q, 
+                                                            self.hh, self.hc, self.fh, self.fc, self.aexp, self.acoeff, self.EMAT)
                 
                 # 初始化
-                t, flow = self.flow_opt[gathered_idx].run(flow = self.flow_initial[gathered_idx])  # 传入初始化流量
+                t, flow = self.flow_opt[gathered_idx].run()  # 传入初始化流量
                 TAC += t
                 # 保存流量优化后数据
                 self.flow.update(flow)
@@ -251,9 +167,14 @@ class Heat_exchanger_network(model):
                 
                 t_left = self.stream_temp[h][self.zh[h,c]] - self.stream_temp[c][self.zc[c,h]]
                 t_right = self.stream_temp[h][self.zh[h,c] + 1] - self.stream_temp[c][self.zc[c,h] + 1]
-                delta_T = (2/3)*((t_left * t_right)**0.5) + t_left/6 + t_right/6
+                
+                if abs(t_left - t_right) < 1e-3:
+                    lmtd = (t_left + t_right) / 2
+                else:
+                    lmtd = (t_left - t_right) / math.log(t_left / t_right)
+            
                 hcoeff = 1/self.hh[h] + 1/self.hc[c]
-                TAC += ((self.q[h,c] * hcoeff / delta_T) ** self.aexp) * self.acoeff
+                TAC += ((self.q[h,c] * hcoeff / lmtd) ** self.aexp) * self.acoeff
                 
             else:
                 temperature = dict()
@@ -267,7 +188,7 @@ class Heat_exchanger_network(model):
                     temperature[h] = [self.stream_temp[h][self.zh[h,c]], self.stream_temp[h][self.zh[h,c] + 1]]
                     temperature[c] = [self.stream_temp[c][self.zc[c,h]], self.stream_temp[c][self.zc[c,h] + 1]]
                 
-                t,flow = self.flow_opt[gathered_idx].run(q, temperature, self.flow_initial[gathered_idx]) # 更新的参数
+                t,flow = self.flow_opt[gathered_idx].run(q, temperature) # 更新的参数
                 TAC += t
                 self.flow.update(flow)
         
@@ -288,6 +209,7 @@ class Heat_exchanger_network(model):
                 
                 delta_T = (2/3)*((t_left * t_right)**0.5) + t_left/6 + t_right/6
                 TAC += ((self.q[h,c] * hcoeff / delta_T) ** self.aexp) * self.acoeff + self.q[h,c] * self.cucost
+                
         return TAC
     
     # 重新计算计算TAC，以及数据打包

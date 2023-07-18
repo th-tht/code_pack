@@ -106,3 +106,67 @@ def IS_MPN(pn: mytyping.Proto_network) -> bool:
     
     return len(pn) == len(unit) - sum(1 for v in unit.values() if v == -1)   
 
+golden_cut = (5**0.5 +1)/2
+# 黄金分割
+def Golden_cut(lb, ub, func)  -> float:
+    
+    if (ub - lb) / (lb + 1e-3) <= 1e-3 or abs(lb - ub) <= 1e-3:
+        #TAC = func((lb + ub)/2)
+        return (lb + ub)/2
+    else:
+        stopper_golden_E = 1
+        x1, y1 = lb, func(lb)
+        x2, y2 = ub, func(ub)
+        x3 = x1 + (x2 - x1) / golden_cut
+        y3 = func(x3)
+        
+        min_y123 = min(y1,y2,y3)
+        
+        # 单调性检验
+        if y1 == min_y123:
+            x11 = x1 + 1e-3
+            y11 = func(x11)
+            if y11 > y1:
+                result = x1
+                #TAC = func(x1)
+                stopper_golden_E = 0
+            else:
+                x2, y2 = x3, y3
+        elif y2 == min_y123:
+            x22 = x2 - 1e-3
+            y22 = func(x22)
+            if y22 > y2:
+                result = x2
+                #TAC = func(x2)
+                stopper_golden_E = 0 
+            else:
+                x1,y1 = x3,y3
+
+        altcount_golden_E = 1
+        while stopper_golden_E > 0:
+
+            if altcount_golden_E == 1:
+                x3 = x1 + (x2 - x1) / golden_cut
+                y3 = func(x3)
+                x4 = x2 - (x2 - x1) / golden_cut
+                y4 = func(x4)
+                altcount_golden_E += 1
+                
+            elif y4 <= y3:
+                x2, y2 = x3, y3
+                x3, y3 = x4, y4
+                x4 = x2 - (x2 - x1) / golden_cut
+                y4 = func(x4)
+            else:
+                x1, y1 = x4, y4
+                x4, y4 = x3, y3
+                x3 = x1 + (x2 - x1) / golden_cut
+                y3 = func(x3)
+                
+            if abs(x2 - x1)/(1e-3 + x1) < 1e-3:
+                stopper_golden_E = 0
+                result = (x1 + x2) / 2
+                #TAC = func(HU)
+    
+    return result
+    
