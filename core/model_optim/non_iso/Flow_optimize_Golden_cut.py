@@ -65,6 +65,7 @@ class Flow_optimize:
                 self.flow_initial[st2, st1] = -1
 
         self.hex_idx = {k: idx for idx, k in enumerate(self.hex_order)}
+        self.variable_num = sum(len(v) - 1 for v in self.match_set.values())
         
     def update(self, q: dict, temperature: dict):
 
@@ -90,7 +91,6 @@ class Flow_optimize:
             
         return tl, tr
         
-    
     def flow_bound(self, idx):    
         
         st1, st2 = self.hex_order[idx]
@@ -146,7 +146,6 @@ class Flow_optimize:
         
         return lb, ub
 
-    
     def pack_golden(self, idx):
         
         st, sst = self.hex_order[idx]
@@ -158,7 +157,6 @@ class Flow_optimize:
         
         return pack
         
-
     def optimize(self, idx):
         
         st1, st2 = self.hex_order[idx]
@@ -169,10 +167,12 @@ class Flow_optimize:
             return self.cal_AC()
         
         lb, ub = self.flow_bound(idx)
-        self.flow[st1, st2] = Golden_cut(lb, ub, self.pack_golden(idx))
+        if self.variable_num <= 3:
+            self.flow[st1, st2] = Golden_cut(lb, ub, self.pack_golden(idx))
+        else: 
+            self.flow[st1, st2] = (lb + ub) / 2
         
         return self.optimize(idx + 1)
-        
     
     def cal_AC(self):
         
