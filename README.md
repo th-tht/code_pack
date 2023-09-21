@@ -36,25 +36,14 @@ If you want to install the academic version, then your network IP needs to be wi
 ## If you have succeeded in the above process, then we only need to run this program.
 
 Branch and bound run command:   
- `python run_part1.py`    
-Parallel computing command:  
-`python run_part1_parallel.py`
-
-for no-isothermal condition:
-Branch and bound run command:   
- `python Niso-run_part1.py`    
-Parallel computing command:  
-`python Niso-run_part1_parallel.py`
+ `python run.py`    
+  
 
 I saved the result files of the two of them in [PART1](/data/PART1/), [PPART1](/data/PPART1/) respectively.
 
 
 ## For four options I used the three case file instructions I calculated.
 For [PART1](/data/PART1/), We can find TAC in the results1.csv file of the corresponding file directory of examples. 
-Other data can be found from time_file.txt
-
-For [PPART1](/data/PPART1/), We can find TAC and TT in the time_file.txt file of the corresponding file directory of exmples. 
-
-and the non-isothermal data you can find in [NPART1](/data/NPART1/) and  [NPPART1](/data/NPPART1/)
+Other data can be found from time_file.txt and the non-isothermal data you can find in [NPART1](/data/NPART1/) 
 
 The data of other files is the data of the optimal structure saved, as well as the data generated during the running process so that we can track the running progress of the program.
