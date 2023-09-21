@@ -239,6 +239,11 @@ class model(Unpack_data):
         self.update_struct(zh, zc, zhu, zcu)
         
         bounder = self.bounder()
+    
+        #if bounder and bounder[0] <= 1075 and bounder[1] >= 1075:
+        #    bounder = [1075, 1075]
+        #else:
+        #    bounder = None
         if not bounder:
             return None
         lb,ub = bounder

@@ -10,7 +10,7 @@ class example:
         try:
             return eval("self.%s()"%ex)
         except:
-            print("Haven't this example")
+            raise "Haven't %s"%ex
     
     def example1(self):
         
@@ -303,7 +303,9 @@ class example:
 
         Nmin_max, Stage_Num = 14, 3
 
-        return thin,thout,hh,fh,tcin,tcout,hc,fc,hucost,hucoeff,thuin,thuout,hhu,cucost,cucoeff,tcuin,tcuout,hcu,unitc,acoeff,aexp,EMAT,HRAT,Nmin_max, Stage_Num
+        TTAC = 0 #3863662.7
+        
+        return thin,thout,hh,fh,tcin,tcout,hc,fc,hucost,hucoeff,thuin,thuout,hhu,cucost,cucoeff,tcuin,tcuout,hcu,unitc,acoeff,aexp,EMAT,HRAT,Nmin_max, Stage_Num, TTAC
 
     def example12(self):
         
@@ -330,8 +332,10 @@ class example:
         HRAT = 30
 
         Nmin_max, Stage_Num = 11, 2
+        
+        TTAC = 0 #139384.2 
 
-        return thin,thout,hh,fh,tcin,tcout,hc,fc,hucost,hucoeff,thuin,thuout,hhu,cucost,cucoeff,tcuin,tcuout,hcu,unitc,acoeff,aexp,EMAT,HRAT,Nmin_max, Stage_Num
+        return thin,thout,hh,fh,tcin,tcout,hc,fc,hucost,hucoeff,thuin,thuout,hhu,cucost,cucoeff,tcuin,tcuout,hcu,unitc,acoeff,aexp,EMAT,HRAT,Nmin_max, Stage_Num, TTAC
 
     def example13(self):
 
@@ -358,13 +362,13 @@ class example:
 
         Nmin_max, Stage_Num = 17, 2
         
-        TTAC = 7030035.0
+        TTAC = 7000000.7#7030035.0
 
         return thin,thout,hh,fh,tcin,tcout,hc,fc,hucost,hucoeff,thuin,thuout,hhu,cucost,cucoeff,tcuin,tcuout,hcu,unitc,acoeff,aexp,EMAT,HRAT,Nmin_max,Stage_Num, TTAC
      
     def example14(self):
 
-        #  https://pubs.acs.org/doi/abs/10.1021/acs.iecr.5b01592
+        # https://pubs.acs.org/doi/abs/10.1021/acs.iecr.5b01592
         # Parameters
         # Hot
         thin  = {"H1": 180, "H2": 280, "H3": 180, "H4": 140, "H5": 220, "H6": 180, "H7": 200, "H8": 120}
@@ -416,53 +420,6 @@ class example:
 
         Nmin_max, Stage_Num = 20, 7
         
-        TTAC = 1427966.0
+        TTAC = 1427965#1415966.0
 
         return thin,thout,hh,fh,tcin,tcout,hc,fc,hucost,hucoeff,thuin,thuout,hhu,cucost,cucoeff,tcuin,tcuout,hcu,unitc,acoeff,aexp,EMAT,HRAT,Nmin_max, Stage_Num, TTAC
-
-    def example16(self):
-        
-        # Hot
-        thin  = {"H1": 180, "H2": 280,  "H3": 180,  "H4": 140,  "H5": 220,  "H6": 180,  "H7": 170,  "H8": 180,  "H9": 280,  "H10": 180,
-                "H11": 120, "H12": 220, "H13": 180, "H14": 140, "H15": 140, "H16": 220, "H17": 220, "H18": 150, "H19": 140, "H20": 220, 
-                "H21": 180, "H22": 150}
-         
-        thout = {"H1": 75,  "H2": 120,  "H3": 75,   "H4": 45,   "H5": 120,  "H6": 55,   "H7": 45,   "H8": 50,   "H9": 90,   "H10": 60, 
-                "H11": 45,  "H12": 120, "H13": 55,  "H14": 45,  "H15": 60,  "H16": 50,  "H17": 60,  "H18": 70,  "H19": 80,  "H20": 50,
-                "H21": 60,  "H22": 45}
-        
-        hh    = {"H1": 2.0, "H2": 2.5,  "H3": 2.0,  "H4": 2.0,  "H5": 1.5,  "H6": 2.0,  "H7": 2.0,  "H8": 2.0,  "H9": 2.0,  "H10": 2.0,
-                "H11": 2.0, "H12": 2.0, "H13": 2.0, "H14":2.0,  "H15": 2.0, "H16": 2.5, "H17": 2.5, "H18": 2.0,  "H19": 2.0, "H20": 2.0,
-                "H21": 2.0, "H22": 2.5}   
-        
-        fh    = {"H1": 30,  "H2": 15,   "H3": 30,   "H4": 30,   "H5": 25,   "H6": 10,   "H7": 30,   "H8": 30,   "H9": 15,    "H10": 30,
-                "H11": 30,  "H12": 25,  "H13": 10,  "H14": 20,  "H15": 70,  "H16": 15,  "H17": 10,  "H18": 20,  "H19": 70,   "H20": 35,
-                "H21": 10,  "H22": 20}
-
-        # Cold
-        tcin  = {"C1": 40, "C2": 120,  "C3": 40,   "C4": 50,    "C5": 50,   "C6": 40,    "C7": 40,  "C8": 120,  "C9": 40,  "C10": 60,
-                "C11": 50,  "C12": 40,  "C13": 120, "C14": 40,   "C15": 50,  "C16": 50,   "C17": 30}
-        
-        tcout = {"C1": 230, "C2": 260,  "C3": 190,  "C4": 190,   "C5": 250,  "C6": 150,   "C7": 150, "C8": 210,  "C9": 130, "C10": 120,
-                "C11": 150, "C12": 130, "C13": 160, "C14": 90,   "C15": 90,  "C16": 150,  "C17": 150}
-        
-        hc    = {"C1": 1.5, "C2": 1.0,  "C3": 1.5,  "C4": 2.0,   "C5": 2.0,  "C6": 2.0,   "C7": 2.0, "C8": 2.5,  "C9": 2.5, "C10": 2.5,
-                "C11": 3.0, "C12": 1.0, "C13": 1.0, "C14": 1.75, "C15": 1.5, "C16": 2.0,  "C17": 2.0}
-        
-        fc    = {"C1": 20,  "C2": 35,   "C3": 35,   "C4": 30,    "C5": 60,   "C6": 20,    "C7": 20,  "C8": 35,   "C9": 35,  "C10": 30,
-                "C11": 10, "C12": 20,   "C13": 35,  "C14": 35,   "C15": 30,  "C16": 30,   "C17": 50}
-
-        # Costs and coefficients
-        hucost = 70;  hucoeff = 800; thuin = 325; thuout = 325;  hhu = 1.0
-        cucost = 10;  cucoeff = 800; tcuin =  25; tcuout = 40;   hcu = 2.0
-        
-        unitc = 8000;   acoeff = 800
-        aexp  = 0.8;    EMAT = 1
-        HRAT = (10, 30)
-
-        Nmin_max, Stage_Num = 38, 4
-
-        TTAC = 1958836.0
-        
-        return thin,thout,hh,fh,tcin,tcout,hc,fc,hucost,hucoeff,thuin,thuout,hhu,cucost,cucoeff,tcuin,tcuout,hcu,unitc,acoeff,aexp,EMAT,HRAT,Nmin_max,Stage_Num,TTAC  
-

@@ -3,7 +3,9 @@ from typing import List, Dict
 import math
 
 from core.model_optim import Structure_Data
-from .Flow_optimize_Golden_cut import Flow_optimize
+#from .Flow_optimize_Golden_cut import Flow_optimize
+from .Flow_optimize_NLOPT import Flow_optimize
+
 from ..model import model
 from .. import Numeric
 
@@ -19,7 +21,6 @@ class Heat_exchanger_network(model):
     flow_opt:  gather_idx: Flow_optimaze 
     
     """
-    
     
     def __init__(self, data):
             
@@ -209,7 +210,8 @@ class Heat_exchanger_network(model):
                 
                 delta_T = (2/3)*((t_left * t_right)**0.5) + t_left/6 + t_right/6
                 TAC += ((self.q[h,c] * hcoeff / delta_T) ** self.aexp) * self.acoeff + self.q[h,c] * self.cucost
-                
+        
+        #print("TAC = " ,TAC)
         return TAC
     
     # 重新计算计算TAC，以及数据打包
@@ -219,7 +221,7 @@ class Heat_exchanger_network(model):
         area,q = dict(),dict()
         fh,fc = dict(),dict()
         TAC = len(self.q) * self.unitc       # 固定费用
-        
+        #print("TAC = ", TAC)
         zh, zc, zhu, zcu = {}, {}, {}, {}
         HU, Area  = 0, 0
         
@@ -231,6 +233,7 @@ class Heat_exchanger_network(model):
             
         # 数据重新计算
         q = self.q
+        #a = 0
         for h,c in self.q:
             
             if h == 'HU':
@@ -267,13 +270,21 @@ class Heat_exchanger_network(model):
                 cool_temp[c,h] =  [cl, cr]
                 
             left,right = hot_temp[h,c][0] - cool_temp[c,h][0], hot_temp[h,c][1] - cool_temp[c,h][1]
-            
-            delta_T = (left + right)/2 if abs(left - right) < 1e-5 else abs(left - right)/abs(1e-5 + math.log(left/right))
+            try:
+                delta_T = (left + right)/2 if abs(left - right) < 1e-5 else abs(left - right)/abs(1e-5 + math.log(left/right))
+            except:
+                print("zh = ", self.zh)
+                print("zc = ", self.zc)
+                print("zhu = ", self.zhu)
+                print("zcu = ", self.zcu) 
+                print(left, right)
+                exit()
             area[h,c] = U * q[h,c] / delta_T
             
             Area += area[h,c]
             TAC += self.acoeff * (area[h,c]**self.aexp)   # 面积费用
-
+            #a += self.acoeff * (area[h,c]**self.aexp) 
+        #print("area cost ",a)
         # 数据压缩打包
         q = {key : "%.2f"%val for key,val in q.items()}
         area = {key : "%.2f"%val for key,val in area.items()}

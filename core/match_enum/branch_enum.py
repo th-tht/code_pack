@@ -59,17 +59,15 @@ class Match(Bound):
                 self.match_exist.add(value)
                 
                 self.pns += 1
-                
                 yield pn, hu
-
                 if fix_value:
                     next_layer_nodes.append(node + (1 << self.match_idx[match]))                            # 可继续搜索的节点
                 else:
-                    next_layer_nodes.append(node)  
+                    next_layer_nodes.append(node)   
         else:
             self.show("Infeasible")
         self.trans.unfix(match) 
-    
+        
     # 采用广度优先搜索进行枚举
     def branch_bound_bfs(self, cutting) -> Tuple[mytyping.Proto_network, mytyping.HU]:
     
@@ -95,7 +93,7 @@ class Match(Bound):
             return
         total_layer = len(self.scores)
         
-        with open(self.path / "process.out", "a+") as f:
+        with open(self.path / "process.out", "w+") as f:
             f.write(f"{0}/{total_layer}, ---; {1}; {time.time()-start: .3f}; {1}; {1}\n")
         
         total_number = 1
@@ -110,7 +108,6 @@ class Match(Bound):
             #print("scores: ",self.scores)
             
             next_layer_nodes = []
-            #match = matches[layer - 1]
             match = self.select_match()     # 选出最不可行的节点进行枚举        
             #print(match)
             self.match_exist.order.append(self.match_idx[match])    # 顺序 + 1
@@ -124,18 +121,18 @@ class Match(Bound):
                         node_val |= (1 << self.stream_idx[self.idx_match[num][0]]) | (1 << self.stream_idx[self.idx_match[num][1]])  
                     else:
                         self.trans.fix(self.idx_match[num],0)
-
+                
                 node_num += 1
                 self.show(f"Node{node_num}, status:")
                 # 先运行exist判断, 可以把暂存的proto-network给更新
                 if self.match_exist.exist(node + (1 << self.match_idx[match])):             # 这条组匹配存在的情况
                     next_layer_nodes.append(node + (1 << self.match_idx[match]))
-                    self.show("Is part of PNS")
-                else:
-                    if self.valid(node_val | (1 << self.stream_idx[match[0]]) | (1 << self.stream_idx[match[1]]), self.Nmin_max - val - 1):
+                    self.show("Is part of PNS")     
+                else:                   
+                    if self.valid(node_val | (1 << self.stream_idx[match[0]]) | (1 << self.stream_idx[match[1]]), self.Nmin_max - val - 1): 
                         yield from self.solve_node(node, match, next_layer_nodes, cutting, 1)
                     else:
-                        self.show("Infeasible")
+                        self.show("Infeasible")      
                 
                 node_num += 1
                 self.show(f"Node{node_num}, status:")
@@ -152,13 +149,14 @@ class Match(Bound):
                 for num in enumed_matched:                                                  # 解除固定该组合的所有匹配                 
                     if node & (1 << num):
                         self.trans.unfix(self.idx_match[num])           
-
+                
             laryer_node = len(self.scheme) * 2
             
             end = time.time()  
-            
+  
             with open(self.path / "process.out", "a+") as f:
-                f.write(f"{layer}/{total_layer}; ({match[0]}, {match[1]}); {laryer_node}; {end-start: .3f}; {self.run_model_number}; {self.pns}, {self.UB_TAC}\n")
+                f.write(f"{layer}/{total_layer}; ({match[0]}, {match[1]}); {laryer_node}; {end-start: .3f}; {self.run_model_number}; {self.pns}, {self.UB_TAC} \n")
+                #f.write(f"node_list: {[{self.idx_match[idx]: 1 & node >> self.match_idx[self.idx_match[idx]] for idx in enumed_matched} for node in self.scheme]}\n")
 
             enumed_matched.append(self.match_idx[match])
             self.scheme = next_layer_nodes                  # 需要枚举的节点  

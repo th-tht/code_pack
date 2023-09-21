@@ -7,19 +7,15 @@ from .tools import (tuple_depack, tuple_pack, toplogical_sort, pinch_energy, IS_
 
 from .structure_enum import Structure_Generation
 
-from .match_enum import match_trie_for_parallel, SEM
-
-from .match_enum import (BMatch,  
-                         PMatch,
+from .match_enum import (BMatch, 
                          Bound,
                          Transshipment)
 
 from .data_write import (save_data, 
                          structure_data_save, Match_write)
 
-from .model_optim import solve_model, Nsolve_model
+from .model_optim import solve_model, Nsolve_model,  Flow_optimize_NLOPT
 
-
-from .run import Part1, PPart1
+from .run import  Part1
 
 

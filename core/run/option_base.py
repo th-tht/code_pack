@@ -34,7 +34,7 @@ class Run_Base(Unpack_data):
         self.Enum_PNS = Match(data)
         self.match_write = Match_write(self.idx_i, self.idx_j, path / "proto_networks")
         
-        self.Enum_Structures = Structure_Generation(self.thin, self.thout, self.fh, self.tcin, self.tcout, self.fc, self.EMAT)#, self.Stage_Num)
+        self.Enum_Structures = Structure_Generation(self.thin, self.thout, self.fh, self.tcin, self.tcout, self.fc, self.EMAT, self.HRAT_MAX)#, self.Stage_Num)
         
         #self.opt_model = solve_model(data)
         self.PNS = []       # proto-networks, occupy
@@ -63,7 +63,7 @@ class Run_Base(Unpack_data):
                 
                 if  idx >= pns_number_limit:
                     break
-            
+
             #if idx % mytyping.FILE_Row!= 0:
             #    self.match_write.write()
             
@@ -270,6 +270,10 @@ class Run_Base(Unpack_data):
     
     def test_pn(self, pn):
         
+        tac = mytyping.inf
         for struc in self.Enum_Structures.Run(pn):
-            self.opt_model(*struc)
-    
+            t = self.opt_model(*struc)
+            if t is not None:
+                tac = min(float(t.TAC), tac)
+            
+        print(tac)

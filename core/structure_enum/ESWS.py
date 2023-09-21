@@ -4,9 +4,9 @@ from . import mytyping
 
 class Enum_Structures(Enum_Base):
     
-    def __init__(self, thin: dict, thout: dict, fh: dict, tcin: dict, tcout: dict, fc: dict, EMAT: int, stage_num = mytyping.inf) -> None:
+    def __init__(self, *avg, stage_num = mytyping.inf) -> None:
         
-        super(Enum_Structures, self).__init__(thin, thout, fh, tcin, tcout, fc, EMAT, stage_num)
+        super(Enum_Structures, self).__init__(*avg, stage_num = stage_num)
     
     def temperature_judge(self, struct: dict):
             

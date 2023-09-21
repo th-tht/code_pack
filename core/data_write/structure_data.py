@@ -143,9 +143,7 @@ class Write_Class:
         df_other.index.name = "Index"
 
         df_other.to_csv(self.data_file_path / 'other.csv', mode = self.write_mode)
-
-        
-        
+     
     def write_results(self, structures, data_file_path : Path, mode = 'w+', index = None):
         
         self.index = index

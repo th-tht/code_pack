@@ -11,4 +11,4 @@ from .match_exist import match_trie, match_trie_for_parallel, tree_dfs
 from .bound import Bound
 
 from .branch_enum import Match as BMatch
-from .branch_enum_parallel import PMatch, SEM
+

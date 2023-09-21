@@ -71,7 +71,6 @@ class Transshipment(Unpack_data):
             qhmax = sum(fc[j] * (tcout[j] - tcin[j]) for j in tcin)
             qcmax = sum(fh[i] * (thin[i] - thout[i]) for i in thin)
 
-        #print(qhmax,qcmax)
         return qhmin, qhmax, qcmin, qcmax
    
     def __getstate__(self):

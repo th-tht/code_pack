@@ -1,15 +1,17 @@
 from itertools import chain, combinations
 from collections import deque, defaultdict
-from . import mytyping, Numeric, toplogical_sort
+from . import mytyping, Numeric, toplogical_sort, pinch_energy
 
 class Enum_Base:
     
-    def __init__(self, thin: dict, thout: dict, fh: dict, tcin: dict, tcout: dict, fc: dict, EMAT: int, stage_num = mytyping.inf) -> None:
+    def __init__(self, *avg, stage_num = mytyping.inf) -> None:
         
-        self.thin, self.thout, self.fh, self.tcin, self.tcout, self.fc, self.EMAT = thin, thout, fh, tcin, tcout, fc, EMAT
+        self.thin, self.thout, self.fh, self.tcin, self.tcout, self.fc, self.EMAT, self.HRAT_MAX = avg
         self.stage_num = stage_num
         
         self.stream_topology: mytyping.Dict[str, set] = dict()  # 拓扑排序长度
+        
+        self.humax, _ = pinch_energy(self.thin, self.thout, self.fh, self.tcin, self.tcout, self.fc, self.HRAT_MAX)
     
     def Enthepy(self, hu):
         
@@ -28,14 +30,15 @@ class Enum_Base:
         
         value, st = expr.solve()
         if st == "r":
-            self.hu_bound [1] = min(value, self.hu_bound[1])
+            self.hu_bound[1] = min(value, self.hu_bound[1])
         else:
-            self.hu_bound [0] = max(value, self.hu_bound[0])
+            self.hu_bound[0] = max(value, self.hu_bound[0])
     
     def initial_hu_bound(self, expr_list: mytyping.List[Numeric] = None):
+        
         self.hu_bound = [0, mytyping.inf]
         if expr_list is None:
-            expr_list= self.hu_expr
+            return
         
         for expr in expr_list:
             self.update_hu_bound(expr)
@@ -71,6 +74,10 @@ class Enum_Base:
         self.hu_expr = []
         self.initial_hu_bound([v for v in self.q.values() if type(v) == Numeric])
         #print(self.q)
+        
+        u = min(self.hu_bound[1], self.humax)
+        self.q = toplogical_sort(matches_list, self.Enthepy(u))
+        
         #return all(type(v) != Numeric for v in self.q.values())
     
     def divide_match(self, num: int) -> list:

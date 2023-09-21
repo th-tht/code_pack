@@ -1,2 +1,0 @@
-Total time :  2.37 s
-TAC:  155413.23 s

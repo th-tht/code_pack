@@ -20,13 +20,12 @@ class Run(Run_Base):
         PNN = EPNN = 0
         terminal_time = 12 * 3600
         for idx, (pn, hu) in enumerate(self._proto_network_yield(pns_number_limit, cutting = True), start = 1):
-            
             PNN += 1
             #self.Attribute[idx].LTAC = self.low_bound(self.PNS[idx - 1], self.Attribute[idx])
             LTAC = self.low_bound(pn, PNS_Data(LHU = hu))
             
             #print(pn, LTAC)
-            
+            #print("PNLB: ", LTAC)
             #pn_idxs.append(idx)
             pns_yield_time += time.time() - start_time
             start_time = time.time()
@@ -36,7 +35,7 @@ class Run(Run_Base):
             
             EPNN += 1
             tac, struc, num = self._structure_optimal(pn)
-            
+            #print("UB:", tac)
             #print(tac)
             #if PNN >= 8:
             #    exit()
@@ -56,12 +55,8 @@ class Run(Run_Base):
             
             if Ub_TAC < self.Target_TAC + 2.5:
                 break
-            
-            if pns_yield_time + opt_time > terminal_time:
-                break
         
         self.Attribute[pn_idxs[0]] = PNS_Data(TAC = results_structures[0].TAC)
         self.data_save(results_structures, pn_idxs)
         
-        return pns_yield_time, opt_time, PNN, EPNN, Enum_structure_number, self.Enum_PNS.get_data()[0]
-      
+        return pns_yield_time, opt_time, PNN, EPNN, Enum_structure_number, self.Enum_PNS.get_data()[0], Ub_TAC

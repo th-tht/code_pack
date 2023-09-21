@@ -1,0 +1,8 @@
+Time for proto-network generation :  0.04 s
+Time for Network building and Evaluation:  0.00 s
+The TOTAL TIME:  0.05 s
+The proto-network number: 1
+The evaluate proto-network number: 1
+TOTAL Enum structure number: 2
+Run transshipment model number: 11
+The optimal TAC is:  2045351.95 $/y

@@ -55,7 +55,7 @@ class Bound(Unpack_data):
         return matches
        
     def score_adjust(self, match: int):
-        
+        #return
         for key,val in self.scores.items():
             if (1 << self.match_idx[key]) & match == 0: 
                 
@@ -119,7 +119,7 @@ class Bound(Unpack_data):
         
         tac = op_cost + len(pn) * self.unitc + self.area_cost 
         
-        #print("NLB: ", pn,  hu_min, tac, tac >= self.UB_TAC)
+        #print("NLB: ", tac, tac >= self.UB_TAC)
         #print(f"hu = {hu_min}, LB = {tac}, ub = {self.UB_TAC}")
         #print(pn, op_cost, len(pn) * self.unitc, tac, self.UB_TAC)
         #print(tac >= self.UB_TAC)
